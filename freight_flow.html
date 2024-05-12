@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>United States Freight Flows</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+
+    body { margin: 0; padding: 0; }
+
+    
+    #title {
+        position: absolute;
+        background-color: #fff;
+        box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+        border-radius: 3px;
+        padding: 15px;
+        margin-top: 15px;
+        margin-left: 15px;
+    }
+
+    #title h2 {
+        line-height: 24px;
+        margin: 0;
+    }
+
+    #title p.credit {
+       margin: 10px 0 0 0;
+       padding: 0;
+    }
+    
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+    
+</style>
+</head>
+    
+<body>
+
+    <div id="map"></div>
+    
+    <div id="title">
+        <h2>United States Freight Flows</h2>
+        
+        <br>
+        
+        <p class="credit">Unit: Millions of Dollars </p>
+        
+        <br>
+        <p class="credit">Click on each state </p>
+        
+        <table><tr><td>
+        <p class="credit"> To see a flow map of freight from:</p>
+        
+        <p><select id="CityMenu"> 
+           <option>Change State Here:</option> 
+
+
+            <option value="California">California</option>
+ 
+            <option value="Illinois">Illinois</option>
+
+            <option value="New York">New York</option>
+
+            <option value="Pennsylvania">Pennsylvania</option>
+
+            <option value="Texas">Texas</option>
+
+            </select></p></td></tr></table>
+        
+        <p class="credit">Click on each route</p>
+        
+        
+         <p class="credit">Data: <a href="https://www.bts.gov/browse-statistical-products-and-data/state-transportation-statistics/freight-flows-state">Bureau of Transportation Statistics</a>.</p>
+    </div> 
+    
+<script>
+    
+    mapboxgl.accessToken = 'pk.eyJ1IjoidWNmbnh1byIsImEiOiJjbHJocDV0NzUwMWl0MnJvMWVueXM5a2w0In0.olnFCSLXM0PJPEZy8JQeOg'; // Mapbox Public Access token
+
+    // Load a new map in the 'map' HTML div
+    var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/ucfnxuo/cltgey6kk009a01pk1eib56pn', // stylesheet location
+    center: [-95.71, 37.1], // starting position [lng, lat]
+    zoom: 4 // starting zoom
+    });
+    
+ map.addControl(new mapboxgl.NavigationControl()); //Adds zoom control
+    
+map.on('load', function() {
+    
+map.addLayer({                  
+            id: 'centroids',
+            type: 'circle',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.cg52g37n' // Mapbox tileset Map ID
+            },
+            'source-layer': 'total_freight-7tunf5', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'circle-radius': 8,  // radius of the circles
+                'circle-color': '#FFFFFF', // colour of the circles, white
+                'circle-opacity': 0.5,  // opacity 
+                'circle-stroke-width': 1,  // frame width
+                'circle-stroke-color': '#000000'  // frame colour is black
+                },
+            
+          });
+    
+map.addLayer({
+        id: 'highlight-circle',
+        type: 'circle',
+        source: {
+            type: 'vector',
+            url: 'mapbox://ucfnxuo.cg52g37n'
+        },
+        'source-layer': 'total_freight-7tunf5',
+        paint: {
+            'circle-radius': 12,
+            'circle-color': '#ecadbe'
+        },
+        filter: ['==', 'NAME', '']  // 初始不显示任何圆形
+    });
+    
+map.addLayer({                  
+            id: 'California',
+            type: 'line',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.0bukw1pm' // Your Mapbox tileset Map ID
+            },
+            'source-layer': 'california-59iemb', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'line-color': {
+                    'property': 'Sum',
+                    'type': 'exponential',
+                    'stops': [
+                        [5000, '#a9e1f8'],
+                        [150000, '#03399f']
+                    ]
+                },
+                'line-width': 5,
+                'line-opacity': 0,
+                'line-opacity-transition': {
+                 duration: 1000,
+                 delay: 0
+             }
+                },
+          });
+    
+map.addLayer({                  
+            id: 'Illinois',
+            type: 'line',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.d5ck5eqe' // Your Mapbox tileset Map ID
+            },
+            'source-layer': 'illinois-665p0a', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'line-color': {
+                    'property': 'Sum',
+                    'type': 'exponential',
+                    'stops': [
+                        [5000, '#a9e1f8'],
+                        [150000, '#03399f']
+                    ]
+                },
+                'line-width': 5,
+                'line-opacity': 0,
+                'line-opacity-transition': {
+                 duration: 1000,
+                 delay: 0
+             }
+                },
+          });
+    
+map.addLayer({                  
+            id: 'New York',
+            type: 'line',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.bvdh1wpd' // Your Mapbox tileset Map ID
+            },
+            'source-layer': 'newyork-aoiiz0', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'line-color': {
+                    'property': 'Sum',
+                    'type': 'exponential',
+                    'stops': [
+                        [5000, '#a9e1f8'],
+                        [150000, '#03399f']
+                    ]
+                },
+                'line-width': 5,
+                'line-opacity': 0,
+                'line-opacity-transition': {
+                 duration: 1000,
+                 delay: 0
+             }
+                },
+          });
+    
+map.addLayer({                  
+            id: 'Pennsylvania',
+            type: 'line',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.1b1rua5n' // Your Mapbox tileset Map ID
+            },
+            'source-layer': 'pennsylvania-dc8cat', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'line-color': {
+                    'property': 'Sum',
+                    'type': 'exponential',
+                    'stops': [
+                        [5000, '#a9e1f8'],
+                        [150000, '#03399f']
+                    ]
+                },
+                'line-width': 5,
+                'line-opacity': 0,
+                'line-opacity-transition': {
+                 duration: 1000,
+                 delay: 0
+             }
+                },
+          });
+    
+map.addLayer({                  
+            id: 'Texas',
+            type: 'line',
+            source: {
+              type: 'vector',
+              url: 'mapbox://ucfnxuo.0az9gl6o' // Your Mapbox tileset Map ID
+            },
+            'source-layer': 'texas-bgxjnk', // name of tilesets
+            'layout': {
+                'visibility': 'visible'
+            },
+            paint: {
+                'line-color': {
+                    'property': 'Sum',
+                    'type': 'exponential',
+                    'stops': [
+                        [5000, '#a9e1f8'],
+                        [150000, '#03399f']
+                    ]
+                },
+                'line-width': 5,
+                'line-opacity': 0,
+                'line-opacity-transition': {
+                 duration: 1000,
+                 delay: 0
+             }
+                },
+          });
+    
+        // Monitoring the 'centroids' circular layer click event.
+        map.on('click', 'centroids', function(e) {
+            var coordinates = e.features[0].geometry.coordinates.slice(); // Get the coordinates of the clicked point
+            var name = e.features[0].properties.NAME; // Get the name of the circle
+            var totalTotal = e.features[0].properties.Total_Total; // get the total value feature
+        
+        // 设置高亮图层的筛选条件以显示被点击的圆形
+        map.setFilter('highlight-circle', ['==', 'NAME', name]);
+
+
+        // Creating the contents of a pop-up window
+        var popupContent = `<h3>${name}</h3><p>Total Value: ${totalTotal}</p>`;
+
+        // Make sure the pop-up window is in the right place
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Creating and displaying pop-up windows
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(popupContent)
+            .addTo(map);
+    });
+    
+    
+    
+    //Monitoring the flow layers
+    var states = ['California', 'Illinois', 'New York', 'Pennsylvania', 'Texas'];
+    
+    states.forEach(function(state) {
+        map.on('click', state, function(e) {
+            // Ensure that the click event is triggered only when the layer is in a visible state
+            if (map.getPaintProperty(state, 'line-opacity') > 0) {
+                var coordinates = e.lngLat; // Get the latitude and longitude of the click location
+                var description = `<strong>Origin State:</strong> ${e.features[0].properties['Origin State']}<br>` +
+                                  `<strong>Dest State:</strong> ${e.features[0].properties['Dest State']}<br>` + 
+                                  `<strong>Total Value:</strong> ${e.features[0].properties.Sum}<br>` +
+                                  `<strong>Domestic Value:</strong> ${e.features[0].properties.Domestic}<br>` + 
+                                  `<strong>Export Value:</strong> ${e.features[0].properties.Export}<br>` + 
+                                  `<strong>Import Value:</strong> ${e.features[0].properties.Import}<br>`;// Using the attributes of the route
+
+                // Make sure the popup doesn't go beyond the map boundaries
+                while (Math.abs(e.lngLat.lng - coordinates.lng) > 180) {
+                    coordinates.lng += e.lngLat.lng > coordinates.lng ? 360 : -360;
+                }
+
+                // Creating and displaying a Popup
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            }
+        });
+    });
+    
+});
+    
+
+    
+document.getElementById('CityMenu').addEventListener('change', function() {
+  var selectedLayer = this.value; // Get the selected layer ID
+    
+  var specificLayerIds = [
+  "California", 
+  "Illinois",
+  "New York",
+  "Pennsylvania", 
+  "Texas"
+  ]; //the ids of the flow layer
+
+  // Get all layers on the map
+  var allLayers = map.getStyle().layers;
+
+  // Filter out layers whose IDs match the specified list
+  var filteredLayers = allLayers.filter(layer => specificLayerIds.includes(layer.id));
+
+  // The filteredLayers variable now contains all the layers whose IDs are the state names above
+
+
+  filteredLayers.forEach(function(layer) {
+    if (layer.type === 'line') { // Make sure the layer type is Line
+      var opacity = layer.id === selectedLayer ? 0.8 : 0; // Transparency is 0.8 if the layer ID matches, otherwise 0
+      map.setPaintProperty(layer.id, 'line-opacity', opacity); // Transparency is 0.95 if the layer ID matches, otherwise 0
+    }
+  });
+    
+
+    
+});
+    
+</script>
+    
+    
+</body>
+    
+</html>
